@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Google Fonts -->
+    <link href="(https://fonts.gstatic.com/s/roboto/v30/KFOlCnqEu92Fr1MmWUlfCBc4AMP6lbBP.woff2) format('woff2');" rel="stylesheet">
+    <style>
+        body, html {
+            height: 100%; 
+            margin: 0;
+        }
+
+        body {
+            background-image: url('/static/images/background1.png');
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: 100% 100%;  
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+
+        .navbar .buttons {
+            display: flex;
+            margin-left: auto;
+            align-items: center; /* Align items vertically in the navbar */
+        }
+
+        .navbar .buttons a {
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            margin-right: 20px;
+            font-family: 'Montserrat', sans-serif; /* Montserrat font for navbar links */
+        }
+
+        .profile-picture {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 10px;
+        }
+
+        .profile-picture img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            text-align: center;
+            color: aliceblue;
+            padding: 10px;
+            box-shadow: 0 -2px 4px rgba(255, 255, 255, 0);
+            font-family: 'Montserrat', sans-serif; /* Montserrat font for footer */
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="buttons">
+            <a href="/login">Login</a>
+            <a href="/signup">Create Account</a>
+            <div class="profile-picture">
+                <!-- Replace 'userProfilePictureURL' with the actual URL of the user's profile picture -->
+                <img src="static/images/blank-profile.png" alt="Profile Picture">
+            </div>
+            <a href="/account">Account</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>Contact us: info@lovejoyantiques.com</p>
+    </footer>
+</body>
+</html>

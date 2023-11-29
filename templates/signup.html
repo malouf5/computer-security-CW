@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create an Account - LoveJoy Antiques</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            color: #fff;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .logo img {
+            width: 100px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        section {
+            padding: 20px;
+            text-align: center;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 20px auto;
+            background-color: #222;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-picture-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            overflow: hidden;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+        }
+
+        .profile-picture-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .edit-picture-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #333;
+            color: #fff;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="file"] {
+            width: calc(100% - 16px);
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #333;
+            border-radius: 4px;
+            background-color: #444;
+            color: #fff;
+            box-sizing: border-box;
+        }
+
+        .password-requirements {
+            color: #ff6961; /* Red color for the requirements */
+            margin-top: 8px;
+        }
+
+        .requirement-met {
+            color: #4CAF50; /* Green color for met requirements */
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<section>
+    <div class="logo">
+        <img src="/static/images/logo1.png" alt="LoveJoy Antiques Logo">
+    </div>
+    <h1>Create an account</h1>
+    <form action="/signup" method="post" enctype="multipart/form-data" onsubmit="return validatePassword()">
+        <div class="profile-picture-container">
+            <img id="preview" src="static/images/blank-profile.png" alt="Profile Picture">
+            <button type="button" class="edit-picture-button" onclick="document.getElementById('profile_picture').click()">Edit</button>
+        </div>
+
+        <input type="file" id="profile_picture" name="profile_picture" accept="image/*" style="display: none;" onchange="previewImage(this)">
+
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <div class="password-requirements" id="password-requirements">
+            Password must meet the following requirements:
+            <ul>
+                <li id="capital-letter">At least one capital letter</li>
+                <li id="number">At least one number</li>
+                <li id="special-character">At least one special character</li>
+                <li id="length">At least 10 characters</li>
+            </ul>
+        </div>
+
+        <label for="confirm_password">Confirm Password:</label>
+        <input type="password" id="confirm_password" name="confirm_password" required>
+
+        <label for="contact_phone_number">Contact Phone Number:</label>
+        <input type="text" id="contact_phone_number" name="contact_phone_number" required>
+
+        <button type="submit">Create Account</button>
+    </form>
+</section>
+
+<script>
+    function previewImage(input) {
+        var preview = document.getElementById('preview');
+        var file = input.files[0];
+        var reader = new FileReader();
+
+        reader.onloadend = function () {
+            preview.src = reader.result;
+        };
+
+        if (file) {
+            reader.readAsDataURL(file);
+        } else {
+            preview.src = "static/images/blank-profile.png";
+        }
+    }
+
+    function validatePassword() {
+        var password = document.getElementById('password').value;
+
+        // Define regular expressions for each required element in the password
+        var capitalLetterRegex = /[A-Z]/;
+        var numberRegex = /[0-9]/;
+        var specialCharacterRegex = /[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/;
+
+        // Check if the password meets all requirements and is at least 10 characters long
+        var isCapitalLetter = capitalLetterRegex.test(password);
+        var isNumber = numberRegex.test(password);
+        var isSpecialCharacter = specialCharacterRegex.test(password);
+        var isLengthValid = password.length >= 10;
+
+        // Display an error message if any requirement is not met
+        if (!isCapitalLetter || !isNumber || !isSpecialCharacter || !isLengthValid) {
+            alert("Password must meet the specified requirements and be at least 10 characters long");
+            return false;
+        }
+
+        return true;
+    }
+
+    // Update the requirements dynamically as the user types
+    document.getElementById('password').addEventListener('input', function () {
+        var password = this.value;
+
+        document.getElementById('capital-letter').className = /[A-Z]/.test(password) ? 'requirement-met' : '';
+        document.getElementById('number').className = /\d/.test(password) ? 'requirement-met' : '';
+        document.getElementById('special-character').className = /[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/.test(password) ? 'requirement-met' : '';
+        document.getElementById('length').className = password.length >= 10 ? 'requirement-met' : '';
+    });
+</script>
+
+</body>
+</html>

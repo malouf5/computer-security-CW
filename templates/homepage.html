@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to LoveJoy Antiques</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            color: #fff;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .logo img {
+            width: 100px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .profile-picture {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-left: 10px;
+            object-fit: cover;
+        }
+
+        nav {
+            background-color: #333;
+            padding: 10px;
+            text-align: center;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 18px;
+        }
+
+        section {
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* Creative Section Styles */
+        .creative-section {
+            color: #fff;
+            text-align: center;
+            padding: 100px 20px;
+            position: relative;
+        }
+
+        .hero-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-container h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        .hero-container p {
+            font-size: 1.2em;
+            margin-bottom: 40px;
+        }
+
+        .button-container {
+            position: absolute;
+            bottom: -50%; /* Adjust the distance from the bottom */
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .glowing-button {
+            display: inline-block;
+            padding: 15px 30px;
+            background-color: #6aff00; /* Choose a color that complements your palette */
+            color: #333;
+            text-decoration: none;
+            font-size: 1.2em;
+            border-radius: 15px; /* Adjust border radius for rounded edges */
+            overflow: hidden;
+            position: relative;
+        }
+
+        .button-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 107%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 70%);
+            border-radius: 15px;
+            animation: glowing 2s infinite;
+        }
+
+        .button-image {
+            width: 60px; /* Adjust the width of the image */
+            height: auto; /* Maintain aspect ratio */
+            margin-bottom: 150px; /* Adjust spacing between image and text */
+        }
+
+        @keyframes glowing {
+            0% {
+                transform: scale(0.8);
+                box-shadow: 0 0 10px #26ff00;
+            }
+            50% {
+                transform: scale(1);
+                box-shadow: 0 0 20px #00ffaa;
+            }
+            100% {
+                transform: scale(0.8);
+                box-shadow: 0 0 10px #00ff40;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="account-info">
+        <span>{{ user.username }}</span>
+        {% if user.profile_picture %}
+        <img class="profile-picture" src="{{ url_for('static', filename=user.profile_picture) }}" alt="Profile Picture">
+        {% endif %}
+    </div>
+</header>
+
+<nav>
+    <a href="/">Home</a>
+    <a href="/evaluation">Evaluation</a>
+    <a href="/evaluated_items">Evaluated Items</a>
+</nav>
+
+<section class="creative-section">
+    <div class="hero-container">
+        <h1>Welcome to LoveJoy Antiques</h1>
+        <p>Discover a world of timeless treasures</p>
+        <div class="button-container">
+            <img src="/static/images/homepage.png" alt="Button Image" class="button-image" />
+            <a href="/explore" class="glowing-button">
+                <div class="button-background"></div>
+                Explore Antiques
+            </a>
+        </div>
+    </div>
+</section>
+
+</body>
+</html>
