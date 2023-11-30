@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,17 +21,20 @@
             text-align: center;
         }
 
-        .logo img {
-            width: 100px;
-            display: block;
-            margin: 0 auto;
+        .account-info {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .account-info span {
+            margin-right: 10px;
         }
 
         .profile-picture {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            margin-left: 10px;
             object-fit: cover;
         }
 
@@ -77,7 +81,7 @@
 
         .button-container {
             position: absolute;
-            bottom: -50%; /* Adjust the distance from the bottom */
+            bottom: -50%;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
@@ -88,11 +92,11 @@
         .glowing-button {
             display: inline-block;
             padding: 15px 30px;
-            background-color: #6aff00; /* Choose a color that complements your palette */
+            background-color: #6aff00;
             color: #333;
             text-decoration: none;
             font-size: 1.2em;
-            border-radius: 15px; /* Adjust border radius for rounded edges */
+            border-radius: 15px;
             overflow: hidden;
             position: relative;
         }
@@ -109,9 +113,9 @@
         }
 
         .button-image {
-            width: 60px; /* Adjust the width of the image */
-            height: auto; /* Maintain aspect ratio */
-            margin-bottom: 150px; /* Adjust spacing between image and text */
+            width: 60px;
+            height: auto;
+            margin-bottom: 150px;
         }
 
         @keyframes glowing {
@@ -130,36 +134,39 @@
         }
     </style>
 </head>
+
 <body>
 
-<header>
-    <div class="account-info">
-        <span>{{ user.username }}</span>
-        {% if user.profile_picture %}
-        <img class="profile-picture" src="{{ url_for('static', filename=user.profile_picture) }}" alt="Profile Picture">
-        {% endif %}
-    </div>
-</header>
-
-<nav>
-    <a href="/">Home</a>
-    <a href="/evaluation">Evaluation</a>
-    <a href="/evaluated_items">Evaluated Items</a>
-</nav>
-
-<section class="creative-section">
-    <div class="hero-container">
-        <h1>Welcome to LoveJoy Antiques</h1>
-        <p>Discover a world of timeless treasures</p>
-        <div class="button-container">
-            <img src="/static/images/homepage.png" alt="Button Image" class="button-image" />
-            <a href="/explore" class="glowing-button">
-                <div class="button-background"></div>
-                Explore Antiques
-            </a>
+    <header>
+        <div class="account-info">
+            <span>{{ user.username }}</span>
+            {% if user.profile_picture %}
+            <img class="profile-picture" src="{{ url_for('uploaded_file', filename=user.profile_picture) }}"
+                alt="Profile Picture">
+            {% endif %}
         </div>
-    </div>
-</section>
+    </header>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/evaluation">Evaluation</a>
+        <a href="/evaluated_items">Evaluated Items</a>
+    </nav>
+
+    <section class="creative-section">
+        <div class="hero-container">
+            <h1>Welcome to LoveJoy Antiques</h1>
+            <p>Discover a world of timeless treasures</p>
+            <div class="button-container">
+                <img src="/static/images/homepage.png" alt="Button Image" class="button-image" />
+                <a href="/explore" class="glowing-button">
+                    <div class="button-background"></div>
+                    Explore Antiques
+                </a>
+            </div>
+        </div>
+    </section>
 
 </body>
+
 </html>
