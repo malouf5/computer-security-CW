@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import generate_password_hash
+from flask_login import LoginManager, UserMixin, login_user, current_user, login_required, logout_user
+from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import os
 
@@ -11,16 +12,25 @@ app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_FOLDER'] = 'static/images/profile_pics'
 
 db = SQLAlchemy(app)
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(128), nullable=False)
     profile_picture = db.Column(db.String(255))
+    evaluations = db.relationship('Evaluation', backref='user', lazy=True)
 
-    def __repr__(self):
-        return '<User %r>' % self.username
+class Evaluation(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.String(255), nullable=False)
+    image = db.Column(db.String(255))
+    age = db.Column(db.Integer)
+    request = db.Column(db.String(255), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
@@ -31,6 +41,10 @@ def create_upload_folder():
         os.makedirs(upload_folder)
 
 create_upload_folder()
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 @app.route('/')
 def welcome():
@@ -44,9 +58,7 @@ def signup():
         password = request.form['password']
         profile_pic = request.files.get('profile_picture')
 
-        # Check if a file was uploaded
         if profile_pic and allowed_file(profile_pic.filename):
-            # Save the file to the upload folder
             filename = secure_filename(profile_pic.filename)
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             profile_pic.save(file_path)
@@ -59,15 +71,16 @@ def signup():
             flash('Username or email already exists', 'error')
             return render_template('signup.html')
 
-        new_user = User(username=username, email=email, password=password, profile_picture=file_path)
+        new_user = User(username=username, email=email, password=generate_password_hash(password), profile_picture=file_path)
 
         db.session.add(new_user)
         db.session.commit()
 
         flash('Account created successfully', 'success')
-        return redirect(url_for('homepage', username=username))
+        login_user(new_user)
+        return redirect(url_for('homepage'))
 
-    return render_template('signup.html') 
+    return render_template('signup.html')
 
 @app.route('/uploaded_file/<filename>')
 def uploaded_file(filename):
@@ -79,12 +92,12 @@ def login():
         username = request.form['username']
         password = request.form['password']
 
-        user = User.query.filter_by(username=username, password=password).first()
+        user = User.query.filter_by(username=username).first()
 
-        if user:
+        if user and check_password_hash(user.password, password):
+            login_user(user)
             flash('Login successful', 'success')
-            # Redirect to the homepage for the logged-in user
-            return redirect(url_for('homepage', username=username))
+            return redirect(url_for('homepage'))
         else:
             flash('Invalid username or password', 'error')
 
@@ -100,7 +113,6 @@ def forgot_password():
         user = User.query.filter_by(email=email, username=username).first()
 
         if user:
-            # Update the user's password
             user.password = generate_password_hash(new_password)
             db.session.commit()
 
@@ -111,14 +123,50 @@ def forgot_password():
 
     return render_template('forgot_password.html')
 
-@app.route('/homepage/<username>')
-def homepage(username):
-    user = User.query.filter_by(username=username).first()
-    if user:
-        return render_template('homepage.html', user=user)
-    else:
-        flash('User not found', 'error')
-        return redirect(url_for('welcome'))
+@app.route('/evaluation', methods=['GET', 'POST'])
+@login_required
+def evaluation():
+    if request.method == 'POST':
+        name = request.form['name']
+        description = request.form['description']
+        image = request.files.get('image')
+        age = request.form.get('age')
+        request_text = request.form['request']
+
+        if image and allowed_file(image.filename):
+            filename = secure_filename(image.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            image.save(file_path)
+        else:
+            file_path = None
+
+        new_evaluation = Evaluation(
+            name=name,
+            description=description,
+            image=file_path,
+            age=age,
+            request=request_text,
+            user_id=current_user.id
+        )
+
+        db.session.add(new_evaluation)
+        db.session.commit()
+
+        flash('Evaluation submitted successfully', 'success')
+        return redirect(url_for('homepage', username=current_user.username))
+
+    return render_template('evaluation.html')
+
+@app.route('/homepage')
+@login_required
+def homepage():
+    return render_template('homepage.html', user=current_user)
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('welcome'))
 
 if __name__ == '__main__':
     with app.app_context():
