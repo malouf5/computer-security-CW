@@ -70,19 +70,25 @@
         <form action="/evaluation" method="post" enctype="multipart/form-data">
             <label for="name">Name:</label>
             <input type="text" id="name" name="name" required>
-
+    
             <label for="description">Description:</label>
             <textarea id="description" name="description" required></textarea>
-
+    
             <label for="image">Upload Image:</label>
             <input type="file" id="image" name="image" accept="image/*" required>
-
+    
             <label for="age">Age of Antique:</label>
             <input type="number" id="age" name="age">
-
+    
             <label for="request">Request:</label>
             <textarea id="request" name="request" required></textarea>
-
+    
+            <label for="contactMethod">Contact Method:</label>
+            <select id="contactMethod" name="contactMethod">
+                <option value="email">Email</option>
+                <option value="phone">Phone</option>
+            </select>
+    
             <button type="submit">Submit Evaluation</button>
         </form>
     </section>

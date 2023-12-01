@@ -21,8 +21,12 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(128), nullable=False)
     profile_picture = db.Column(db.String(255))
+    is_admin = db.Column(db.Boolean, default=False) 
     evaluations = db.relationship('Evaluation', backref='user', lazy=True)
+User.is_admin = True
+db.session.commit
 
+        
 class Evaluation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
@@ -155,7 +159,7 @@ def evaluation():
         flash('Evaluation submitted successfully', 'success')
         return redirect(url_for('homepage', username=current_user.username))
 
-    return render_template('evaluation.html')
+    return render_template('evaluationpage.html')
 
 @app.route('/homepage')
 @login_required
