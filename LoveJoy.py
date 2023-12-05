@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, current_user, login_required, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -21,12 +21,13 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(128), nullable=False)
     profile_picture = db.Column(db.String(255))
-    is_admin = db.Column(db.Boolean, default=False) 
+    is_admin = db.Column(db.Boolean, default=False)
     evaluations = db.relationship('Evaluation', backref='user', lazy=True)
-User.is_admin = True
-db.session.commit
 
-        
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
 class Evaluation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
@@ -35,6 +36,7 @@ class Evaluation(db.Model):
     age = db.Column(db.Integer)
     request = db.Column(db.String(255), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    status = db.Column(db.String(20), default='pending')
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
@@ -45,10 +47,6 @@ def create_upload_folder():
         os.makedirs(upload_folder)
 
 create_upload_folder()
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
 
 @app.route('/')
 def welcome():
@@ -69,13 +67,21 @@ def signup():
         else:
             file_path = "profile_pics/blank-profile.png"
 
-        existing_user = User.query.filter((User.username == username) | (User.email == email)).first()
+        # Check if there are any users in the database
+        existing_users = User.query.all()
 
-        if existing_user:
-            flash('Username or email already exists', 'error')
-            return render_template('signup.html')
+        if existing_users:
+            is_admin = False
+        else:
+            is_admin = True
 
-        new_user = User(username=username, email=email, password=generate_password_hash(password), profile_picture=file_path)
+        new_user = User(
+            username=username,
+            email=email,
+            password=generate_password_hash(password),
+            profile_picture=file_path,
+            is_admin=is_admin
+        )
 
         db.session.add(new_user)
         db.session.commit()
@@ -85,6 +91,48 @@ def signup():
         return redirect(url_for('homepage'))
 
     return render_template('signup.html')
+
+@app.route('/admin_dashboard')
+@login_required
+def admin_dashboard():
+    # Check if the user is an admin
+    if not current_user.is_admin:
+        abort(403)
+
+    # Query all evaluations for the admin dashboard
+    evaluations = Evaluation.query.all()
+
+    return render_template('admin_dashboard.html', evaluations=evaluations)
+
+@app.route('/admin_process_evaluation', methods=['POST'])
+@login_required
+def admin_process_evaluation():
+    # Check if the user is an admin
+    if not current_user.is_admin:
+        abort(403)
+
+    # Get the evaluation_id and action from the form
+    evaluation_id = request.form.get('evaluation_id')
+    action = request.form.get('action')
+
+    # Retrieve the evaluation
+    evaluation = Evaluation.query.get(evaluation_id)
+
+    # Process the evaluation based on the action
+    if action == 'accept':
+        # Implement logic for accepting the evaluation
+        # For example, update the evaluation status
+        evaluation.status = 'accepted'
+    elif action == 'decline':
+        # Implement logic for declining the evaluation
+        # For example, update the evaluation status
+        evaluation.status = 'declined'
+
+    # Commit changes to the database
+    db.session.commit()
+
+    # Redirect back to the admin dashboard
+    return redirect(url_for('admin_dashboard'))
 
 @app.route('/uploaded_file/<filename>')
 def uploaded_file(filename):
