@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory, abort
+from flask import Flask, render_template, request, redirect, session, url_for, flash, send_from_directory, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, current_user, login_required, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -7,8 +7,8 @@ import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///main.db'
-app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////Users/philip/Desktop/computer security CW/instance/main.db'
+app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg'}
 app.config['UPLOAD_FOLDER'] = 'static/images/profile_pics'
 
 db = SQLAlchemy(app)
@@ -92,19 +92,39 @@ def signup():
 
     return render_template('signup.html')
 
-@app.route('/admin_dashboard')
+@app.route('/admin_counsel', methods=['GET', 'POST'])
 @login_required
-def admin_dashboard():
+def admin_counsel():
     # Check if the user is an admin
     if not current_user.is_admin:
         abort(403)
 
-    # Query all evaluations for the admin dashboard
-    evaluations = Evaluation.query.all()
+    if request.method == 'POST':
+        # Process the evaluation based on the action
+        evaluation_id = request.form.get('evaluation_id')
+        action = request.form.get('action')
+        evaluation = Evaluation.query.get(evaluation_id)
 
-    return render_template('admin_dashboard.html', evaluations=evaluations)
+        if action == 'accept':
+            evaluation.status = 'accepted'
+        elif action == 'decline':
+            evaluation.status = 'declined'
+        
+        db.session.commit()
 
-@app.route('/admin_process_evaluation', methods=['POST'])
+        flash('Evaluation status updated', 'success')
+        return redirect(url_for('admin_counsel'))
+
+    # Retrieve registered users and evaluated antiques for GET request
+    registered_users = User.query.all()
+    antiques = Evaluation.query.all()
+    return render_template('admin_counsel.html', registered_users=registered_users, antiques=antiques)
+
+
+
+
+########REMOVE THISSSS~~~#####
+@app.route('/admin_counsel', methods=['POST'])
 @login_required
 def admin_process_evaluation():
     # Check if the user is an admin
@@ -114,25 +134,23 @@ def admin_process_evaluation():
     # Get the evaluation_id and action from the form
     evaluation_id = request.form.get('evaluation_id')
     action = request.form.get('action')
-
     # Retrieve the evaluation
     evaluation = Evaluation.query.get(evaluation_id)
-
+    current_user_id = session['id']
+    current_user = User.query.filter_by(id=current_user_id).first()
+    username = current_user.username
+    profile_picture=current_user.profile_picture
+    print('TEST:',profile_picture)
     # Process the evaluation based on the action
     if action == 'accept':
-        # Implement logic for accepting the evaluation
-        # For example, update the evaluation status
         evaluation.status = 'accepted'
     elif action == 'decline':
-        # Implement logic for declining the evaluation
-        # For example, update the evaluation status
         evaluation.status = 'declined'
 
-    # Commit changes to the database
     db.session.commit()
 
-    # Redirect back to the admin dashboard
-    return redirect(url_for('admin_dashboard'))
+    # Redirect back to the admin counsel
+    return render_template('admin_counsel.html',username=username,profile_picture=profile_picture)
 
 @app.route('/uploaded_file/<filename>')
 def uploaded_file(filename):

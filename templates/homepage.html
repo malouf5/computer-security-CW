@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,6 +18,7 @@
             color: #fff;
             padding: 20px;
             text-align: center;
+            position: relative;
         }
 
         .account-info {
@@ -56,7 +56,6 @@
             text-align: center;
         }
 
-        /* Creative Section Styles */
         .creative-section {
             color: #fff;
             text-align: center;
@@ -134,16 +133,16 @@
         }
     </style>
 </head>
-
 <body>
-
     <header>
         <div class="account-info">
             <span>{{ user.username }}</span>
             {% if user.profile_picture %}
-            <img class="profile-picture" src="{{ url_for('uploaded_file', filename=user.profile_picture) }}"
-                alt="Profile Picture">
-            {% endif %}
+            <img class="profile-picture" src="{{ url_for('static', filename=user.profile_picture) }}" alt="Profile Picture">
+        {% else %}
+            <img class="profile-picture" src="{{ url_for('static', filename='images/profile_pics/blank-profile.png') }}" alt="Profile Picture">
+        {% endif %}
+        
         </div>
     </header>
 
@@ -151,6 +150,9 @@
         <a href="/">Home</a>
         <a href="/evaluation">Evaluation</a>
         <a href="/evaluated_items">Evaluated Items</a>
+        {% if user.is_admin %}
+            <a href="{{ url_for('admin_counsel') }}">Admin Counsel</a>
+        {% endif %}
     </nav>
 
     <section class="creative-section">
@@ -168,5 +170,4 @@
     </section>
 
 </body>
-
 </html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Counsel</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .account-info {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .account-info span {
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .profile-picture {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .admin-section {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .user-list,
+        .antique-list {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #333;
+            color: #fff;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .action-buttons button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .action-buttons button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="account-info">
+            <span>{{ current_user.username }}</span>
+            <img class="profile-picture" src="{{ url_for('static', filename='images/' + current_user.profile_picture) }}" alt="Profile Picture">
+        </div>
+    </header>
+    
+    <!-- Rest of your HTML goes here, including the forms for handling 'accept' and 'decline' actions -->
+    
+
+    <section class="admin-section">
+        <div class="user-list">
+            <h2>Registered Users</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in registered_users %}
+                    <tr>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.email }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="antique-list">
+            <h2>Antiques Uploaded</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Image</th>
+                        <th>Age</th>
+                        <th>Request</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for antique in antiques %}
+                    <tr>
+                        <td>{{ antique.user.username }}</td>
+                        <td>{{ antique.name }}</td>
+                        <td>{{ antique.description }}</td>
+                        <td><img src="{{ url_for('uploaded_file', filename=antique.image) }}" alt="Image"
+                                style="max-width: 100px;"></td>
+                        <td>{{ antique.age }}</td>
+                        <td>{{ antique.request }}</td>
+                        <td class="action-buttons">
+                            <form action="{{ url_for('admin_process_evaluation') }}" method="post">
+                                <input type="hidden" name="evaluation_id" value="{{ antique.id }}">
+                                <input type="hidden" name="action" value="accept">
+                                <button type="submit">Accept</button>
+                            </form>
+                            <form action="{{ url_for('admin_process_evaluation') }}" method="post">
+                                <input type="hidden" name="evaluation_id" value="{{ antique.id }}">
+                                <input type="hidden" name="action" value="decline">
+                                <button type="submit">Decline</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</body>
+
+</html>
