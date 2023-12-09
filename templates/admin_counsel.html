@@ -101,11 +101,12 @@
     <header>
         <div class="account-info">
             <span>{{ current_user.username }}</span>
-            <img class="profile-picture" src="{{ url_for('static', filename='images/' + current_user.profile_picture) }}" alt="Profile Picture">
+            {% if current_user.profile_picture %}
+            <img class="profile-picture" src="{ current_user.profile_picture }" alt="Profile Picture">
+            {% endif %}
         </div>
     </header>
     
-    <!-- Rest of your HTML goes here, including the forms for handling 'accept' and 'decline' actions -->
     
 
     <section class="admin-section">
@@ -150,22 +151,11 @@
                         <td>{{ antique.user.username }}</td>
                         <td>{{ antique.name }}</td>
                         <td>{{ antique.description }}</td>
-                        <td><img src="{{ url_for('uploaded_file', filename=antique.image) }}" alt="Image"
+                        <td><img src="{{ antique.image }}" alt="Image"
                                 style="max-width: 100px;"></td>
-                        <td>{{ antique.age }}</td>
+                    
+                                <td>{{ antique.age }}</td>
                         <td>{{ antique.request }}</td>
-                        <td class="action-buttons">
-                            <form action="{{ url_for('admin_process_evaluation') }}" method="post">
-                                <input type="hidden" name="evaluation_id" value="{{ antique.id }}">
-                                <input type="hidden" name="action" value="accept">
-                                <button type="submit">Accept</button>
-                            </form>
-                            <form action="{{ url_for('admin_process_evaluation') }}" method="post">
-                                <input type="hidden" name="evaluation_id" value="{{ antique.id }}">
-                                <input type="hidden" name="action" value="decline">
-                                <button type="submit">Decline</button>
-                            </form>
-                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>

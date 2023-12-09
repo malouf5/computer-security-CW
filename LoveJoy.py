@@ -92,65 +92,7 @@ def signup():
 
     return render_template('signup.html')
 
-@app.route('/admin_counsel', methods=['GET', 'POST'])
-@login_required
-def admin_counsel():
-    # Check if the user is an admin
-    if not current_user.is_admin:
-        abort(403)
-
-    if request.method == 'POST':
-        # Process the evaluation based on the action
-        evaluation_id = request.form.get('evaluation_id')
-        action = request.form.get('action')
-        evaluation = Evaluation.query.get(evaluation_id)
-
-        if action == 'accept':
-            evaluation.status = 'accepted'
-        elif action == 'decline':
-            evaluation.status = 'declined'
-        
-        db.session.commit()
-
-        flash('Evaluation status updated', 'success')
-        return redirect(url_for('admin_counsel'))
-
-    # Retrieve registered users and evaluated antiques for GET request
-    registered_users = User.query.all()
-    antiques = Evaluation.query.all()
-    return render_template('admin_counsel.html', registered_users=registered_users, antiques=antiques)
-
-
-
-
-########REMOVE THISSSS~~~#####
-@app.route('/admin_counsel', methods=['POST'])
-@login_required
-def admin_process_evaluation():
-    # Check if the user is an admin
-    if not current_user.is_admin:
-        abort(403)
-
-    # Get the evaluation_id and action from the form
-    evaluation_id = request.form.get('evaluation_id')
-    action = request.form.get('action')
-    # Retrieve the evaluation
-    evaluation = Evaluation.query.get(evaluation_id)
-    current_user_id = session['id']
-    current_user = User.query.filter_by(id=current_user_id).first()
-    username = current_user.username
-    profile_picture=current_user.profile_picture
-    print('TEST:',profile_picture)
-    # Process the evaluation based on the action
-    if action == 'accept':
-        evaluation.status = 'accepted'
-    elif action == 'decline':
-        evaluation.status = 'declined'
-
-    db.session.commit()
-
-    # Redirect back to the admin counsel
-    return render_template('admin_counsel.html',username=username,profile_picture=profile_picture)
+@app.route('/admin_counsel')
 
 @app.route('/uploaded_file/<filename>')
 def uploaded_file(filename):

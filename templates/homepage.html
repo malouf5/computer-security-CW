@@ -130,6 +130,10 @@
                 transform: scale(0.8);
                 box-shadow: 0 0 10px #00ff40;
             }
+            
+        }
+        .profile-picture{
+            width: 100px;
         }
     </style>
 </head>
@@ -137,12 +141,11 @@
     <header>
         <div class="account-info">
             <span>{{ user.username }}</span>
-            {% if user.profile_picture %}
-            <img class="profile-picture" src="{{ url_for('static', filename=user.profile_picture) }}" alt="Profile Picture">
-        {% else %}
-            <img class="profile-picture" src="{{ url_for('static', filename='images/profile_pics/blank-profile.png') }}" alt="Profile Picture">
-        {% endif %}
+          {% if user.profile_picture %}
+          <img class="profile_picture" src="{{ user.profile_picture }}" alt="Profile Picture">
+          {% endif %}
         
+
         </div>
     </header>
 
