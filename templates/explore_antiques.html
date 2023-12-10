@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore Antiques</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .antique-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .antique-card {
+            width: 300px;
+            margin: 15px;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            background-color: #fff;
+        }
+
+        .antique-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .antique-info {
+            padding: 15px;
+        }
+
+        .antique-info h3 {
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <section class="antique-container">
+        {% for evaluation in evaluations %}
+            <div class="antique-card">
+                <img src="{{ url_for('uploaded_file', filename=evaluation.image) }}" alt="Antique Image" class="antique-image">
+                <div class="antique-info">
+                    <h3>{{ evaluation.name }}</h3>
+                    <p><strong>Age:</strong> {{ evaluation.age }} years</p>
+                    <p><strong>Description:</strong> {{ evaluation.description }}</p>
+                    <p><strong>Request:</strong> {{ evaluation.request }}</p>
+                    <p><strong>Contact:</strong> {{ evaluation.user.email }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    </section>
+</body>
+</html>

@@ -92,8 +92,6 @@ def signup():
 
     return render_template('signup.html')
 
-@app.route('/admin_counsel')
-
 @app.route('/uploaded_file/<filename>')
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
@@ -173,6 +171,19 @@ def evaluation():
 @login_required
 def homepage():
     return render_template('homepage.html', user=current_user)
+
+@app.route('/explore')
+@login_required
+def explore_antiques():
+    evaluations = Evaluation.query.all()
+    return render_template('explore_antiques.html', evaluations=evaluations)
+
+@app.route('/admin_counsel')
+@login_required
+def admin_counsel():
+    if not current_user.is_admin:
+        abort(403)  # HTTP Forbidden access if user is not an admin
+    return render_template('admin_counsel.html')
 
 @app.route('/logout')
 @login_required
