@@ -185,6 +185,14 @@ def admin_counsel():
         abort(403)  # HTTP Forbidden access if user is not an admin
     return render_template('admin_counsel.html')
 
+@app.route('/evaluated_items')
+@login_required
+def evaluated_items():
+    user_evaluations = Evaluation.query.filter_by(user_id=current_user.id).all()
+    return render_template('evaluated_items.html', user_evaluated_items=user_evaluations, user=current_user)
+
+
+
 @app.route('/logout')
 @login_required
 def logout():

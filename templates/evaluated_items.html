@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluated Items - LoveJoy Antiques</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            color: #fff;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .account-info {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .account-info span {
+            margin-left: 10px;
+            color: #fff;
+        }
+
+        .profile-picture {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        nav {
+            background-color: #333;
+            padding: 10px;
+            text-align: center;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 18px;
+        }
+
+        .evaluated-items-section {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .item-card {
+            background-color: #222;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+            margin: 20px auto;
+            padding: 20px;
+            max-width: 300px;
+            display: inline-block;
+            vertical-align: top;
+            margin: 20px;
+        }
+
+        .item-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+
+        .item-card h3 {
+            color: #fff;
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+
+        .item-card p {
+            color: #fff;
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="account-info">
+            <!-- Include dynamic user profile picture and username -->
+            {% if user.profile_picture %}
+                <img class="profile-picture" src="{{ user.profile_picture }}" alt="Profile Picture">
+            {% endif %}
+            <span>{{ user.username }}</span>
+        </div>
+    </header>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/evaluation">Evaluation</a>
+        <a href="/evaluated_items">Evaluated Items</a>
+        {% if user.is_admin %}
+        <a href="{{ url_for('admin_counsel') }}">Admin Counsel</a>
+        {% endif %}
+    </nav>
+
+    <section class="evaluated-items-section">
+        <h1>Your Evaluated Items</h1>
+
+        <!-- Loop through the evaluated items of the user -->
+        {% for item in user_evaluated_items %}
+        <div class="item-card">
+            <img src="{{ item.image_url }}" alt="Item Image">
+            <h3>{{ item.name }}</h3>
+            <p>{{ item.description }}</p>
+        </div>
+        {% endfor %}
+    </section>
+
+
+</body>
+</html>

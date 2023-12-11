@@ -54,12 +54,8 @@
             margin: 0 10px;
             font-size: 18px;
         }
-
-        section {
-            padding: 20px;
-            text-align: center;
-        }
-
+       
+        
         .creative-section {
             color: #fff;
             text-align: center;
@@ -139,7 +135,9 @@
 </head>
 <body>
     <header>
+        <img src="path_to_your_logo_image.jpg" alt="LoveJoy Antiques Logo" class="logo">
         <div class="account-info">
+            <!-- User profile picture and username -->
             {% if user.profile_picture %}
                 <img class="profile-picture" src="{{ user.profile_picture }}" alt="Profile Picture">
             {% endif %}
@@ -152,9 +150,10 @@
         <a href="/evaluation">Evaluation</a>
         <a href="/evaluated_items">Evaluated Items</a>
         {% if user.is_admin %}
-        <a href="{{ url_for('admin_counsel') }}">Admin Counsel</a>
+            <a href="{{ url_for('admin_counsel') }}">Admin Counsel</a>
         {% endif %}
     </nav>
+    
 
     <section class="creative-section">
         <div class="hero-container">
@@ -163,7 +162,6 @@
             <div class="button-container">
                 <img src="/static/images/homepage.png" alt="Button Image" class="button-image" />
                 <a href="/explore" class="glowing-button">
-                    <div class="button-background"></div>
                     Explore Antiques
                 </a>
             </div>
