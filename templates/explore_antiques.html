@@ -9,25 +9,43 @@
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
-            color: #333;
+            background-color: #222121;
+            color: #858383;
         }
 
         .antique-container {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
             padding: 20px;
         }
 
+        .antique-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .antique-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 960px;
+        }
+
         .antique-card {
-            width: 300px;
-            margin: 15px;
+            width: 100%;
             border: 1px solid #ddd;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             border-radius: 10px;
             overflow: hidden;
             background-color: #fff;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .antique-card:hover {
+            transform: scale(1.05);
         }
 
         .antique-image {
@@ -36,29 +54,62 @@
             object-fit: cover;
         }
 
-        .antique-info {
+        .antique-details {
             padding: 15px;
+            display: none;
         }
 
-        .antique-info h3 {
-            margin-top: 0;
+        .poster-name {
+            padding: 10px 15px;
+            font-size: 0.9em;
+            color: #555;
+            background-color: #f9f9f9;
+            border-top: 1px solid #eee;
+        }
+
+        @media (max-width: 768px) {
+            .antique-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .antique-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
+    <script>
+        function showDetails(card) {
+            let details = card.getElementsByClassName('antique-details')[0];
+            if (details.style.display === "none") {
+                details.style.display = "block";
+            } else {
+                details.style.display = "none";
+            }
+        }
+    </script>
 </head>
 <body>
+    <nav>
+        <a href="homepage">Return to Homepage</a>
+    </nav>
+    
     <section class="antique-container">
-        {% for evaluation in evaluations %}
-            <div class="antique-card">
-                <img src="{{ url_for('uploaded_file', filename=evaluation.image) }}" alt="Antique Image" class="antique-image">
-                <div class="antique-info">
+        <h2>Explore Antiques</h2>
+        <div class="antique-grid">
+            {% for evaluation in evaluations %}
+                <div class="antique-card" onclick="showDetails(this)">
+                    <img src="{{ evaluation.image }}" alt="Antique Image" class="antique-image">
                     <h3>{{ evaluation.name }}</h3>
-                    <p><strong>Age:</strong> {{ evaluation.age }} years</p>
-                    <p><strong>Description:</strong> {{ evaluation.description }}</p>
-                    <p><strong>Request:</strong> {{ evaluation.request }}</p>
-                    <p><strong>Contact:</strong> {{ evaluation.user.email }}</p>
+                    <div class="antique-details">
+                        <p><strong>Age:</strong> {{ evaluation.age }} years</p>
+                        <p><strong>Description:</strong> {{ evaluation.description }}</p>
+                        <p><strong>Contact:</strong> {{ evaluation.user.email }}</p>
+                    </div>
                 </div>
-            </div>
-        {% endfor %}
+            {% endfor %}
+        </div>
     </section>
 </body>
 </html>

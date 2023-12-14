@@ -78,7 +78,8 @@
         input[type="text"],
         input[type="email"],
         input[type="password"],
-        input[type="file"] {
+        input[type="file"],
+        input[type="tel"] {
             width: calc(100% - 16px);
             padding: 8px;
             margin-bottom: 10px;
@@ -98,6 +99,11 @@
             color: #4CAF50; /* Green color for met requirements */
         }
 
+        #password-match-message {
+            color: #ff6961;
+            margin-top: 8px;
+        }
+
         button {
             background-color: #4CAF50;
             color: #fff;
@@ -110,100 +116,202 @@
         button:hover {
             background-color: #45a049;
         }
+
+        #captcha-container {
+    margin-bottom: 20px;
+}
+
+#captcha-text {
+    background-color: #444;
+    color: #fff;
+    padding: 8px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    text-align: center;
+    font-size: 16px;
+}
+
+#captcha {
+    width: calc(100% - 16px);
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #333;
+    border-radius: 4px;
+    background-color: #444;
+    color: #fff;
+    box-sizing: border-box;
+}
+
     </style>
 </head>
 <body>
 
-<section>
-    <div class="logo">
-        <img src="/static/images/logo1.png" alt="LoveJoy Antiques Logo">
-    </div>
-    <h1>Create an account</h1>
-    <form action="/signup" method="post" enctype="multipart/form-data" onsubmit="return validatePassword()">
-        <div class="profile-picture-container">
-            <img id="preview" src="/static/images/profile_pics/blank-profile.png" alt="Profile Picture">
-            <button type="button" class="edit-picture-button" onclick="document.getElementById('profile_picture').click()">Edit</button>
+    <section>
+        <div class="logo">
+            <img src="/static/images/logo1.png" alt="LoveJoy Antiques Logo">
         </div>
+        <h1>Create an account</h1>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="07c3a155ab1be52a26fe36abaa50cbb7">
+            <input type="file" name="file1">
+            <input type="file" name="file2">
+        
 
-        <input type="file" id="profile_picture" name="profile_picture" accept="image/*" style="display: none;" onchange="previewImage(this)">
+            <!-- Profile Picture -->
+            <div class="profile-picture-container">
+                <img id="preview" src="/static/images/profile_pics/blank-profile.png" alt="Profile Picture">
+                <button type="button" class="edit-picture-button" onclick="document.getElementById('profile_picture').click()">Edit</button>
+            </div>
+            <input type="file" id="profile_picture" name="profile_picture" accept="image/*" style="display: none;" onchange="previewImage(this)">
+    
+            <!-- User Inputs --> 
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+    
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+    
+            <!-- Password Fields -->
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <div class="password-requirements" id="password-requirements">
+                <ul>
+                    <li id="capital-letter">At least one capital letter</li>
+                    <li id="number">At least one number</li>
+                    <li id="special-character">At least one special character</li>
+                    <li id="length">At least 10 characters</li>
+                </ul>
+            </div>
+    
+            <label for="confirm_password">Confirm Password:</label>
+            <input type="password" id="confirm_password" name="confirm_password" required>
+            <div id="password-match-message"></div>
+    
+            <!-- Contact Number -->
+            <label for="contact_phone_number">Contact Phone Number:</label>
+            <input type="tel" id="contact_phone_number" name="contact_phone_number" required>
+    
+            <!-- Security Questions -->
+            <label for="security_question1">What high school did you attend?</label>
+            <input type="text" id="security_answer1" name="security_answer1" required>
+    
+            <label for="security_question2">What was the name of your first pet?</label>
+            <input type="text" id="security_answer2" name="security_answer2" required>
+    
+            <label for="security_question3">What was your first car model?</label>
+            <input type="text" id="security_answer3" name="security_answer3" required>
 
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
-
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
-
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-        <div class="password-requirements" id="password-requirements">
-            Password must meet the following requirements:
-            <ul>
-                <li id="capital-letter">At least one capital letter</li>
-                <li id="number">At least one number</li>
-                <li id="special-character">At least one special character</li>
-                <li id="length">At least 10 characters</li>
-            </ul>
-        </div>
-
-        <label for="confirm_password">Confirm Password:</label>
-        <input type="password" id="confirm_password" name="confirm_password" required>
-
-        <label for="contact_phone_number">Contact Phone Number:</label>
-        <input type="text" id="contact_phone_number" name="contact_phone_number" required>
-
-        <button type="submit">Create Account</button>
-    </form>
-</section>
-
-<script>
-    function previewImage(input) {
-        var preview = document.getElementById('preview');
-        var file = input.files[0];
-        var reader = new FileReader();
-
-        reader.onloadend = function () {
-            preview.src = reader.result;
-        };
-
-        if (file) {
-            reader.readAsDataURL(file);
-        } else {
-            preview.src = "static/images/blank-profile.png";
+            <div id="captcha-container">
+                <label for="captcha">Please enter the characters you see below:</label>
+                <canvas id="captcha-canvas" width="200" height="60"></canvas>
+                <input type="text" id="captcha" name="captcha" required>
+            </div>
+            <!-- Submit Button -->
+            <button type="submit">Create Account</button>
+        </form>
+    </section>
+    
+    <script>
+        // Function to preview the profile image
+        function previewImage(input) {
+            var preview = document.getElementById('preview');
+            var file = input.files[0];
+            var reader = new FileReader();
+    
+            reader.onloadend = function () {
+                preview.src = reader.result;
+            };
+    
+            if (file) {
+                reader.readAsDataURL(file);
+            } else {
+                preview.src = "/static/images/blank-profile.png";
+            }
         }
+    
+        // Function to update the class of password requirements
+        function updateRequirementClass(elementId, conditionMet) {
+            var element = document.getElementById(elementId);
+            if (element) {
+                element.className = conditionMet ? 'requirement-met' : '';
+            }
+        }
+    
+        // Event listener for password input
+        document.addEventListener('DOMContentLoaded', function () {
+            var passwordInput = document.getElementById('password');
+    
+            passwordInput.addEventListener('input', function () {
+                var password = passwordInput.value;
+    
+                // Update classes based on conditions
+                updateRequirementClass('capital-letter', /[A-Z]/.test(password));
+                updateRequirementClass('number', /\d/.test(password));
+                updateRequirementClass('special-character', /[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/.test(password));
+                updateRequirementClass('length', password.length >= 10);
+            });
+        });
+    
+        function validateForm() {
+    return validatePassword() && checkPasswordMatch() && validateCaptcha();
+}
+
+function validateCaptcha() {
+    var enteredCaptcha = document.getElementById('captcha').value;
+    var actualCaptcha = document.getElementById('captcha-canvas').getAttribute('data-captcha');
+
+    if (enteredCaptcha !== actualCaptcha) {
+        alert('Incorrect CAPTCHA. Please try again.');
+        generateCaptcha(); // Reset CAPTCHA
+        return false;
+    }
+    return true;
+}
+
+// Function to generate CAPTCHA text and draw on canvas
+function generateCaptcha() {
+    var canvas = document.getElementById('captcha-canvas');
+    var ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear previous CAPTCHA
+
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var captchaLength = 6;
+    var captcha = '';
+
+    for (var i = 0; i < captchaLength; i++) {
+        var index = Math.floor(Math.random() * characters.length);
+        captcha += characters.charAt(index);
     }
 
-    function validatePassword() {
-        var password = document.getElementById('password').value;
+    // Draw the CAPTCHA text
+    ctx.font = '24px Arial';
+    ctx.fillStyle = '#FFF';
+    ctx.fillText(captcha, 10, 40);
 
-        var capitalLetterRegex = /[A-Z]/;
-        var numberRegex = /[0-9]/;
-        var specialCharacterRegex = /[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/;
-
-        // Check if the password meets all requirements and is at least 10 characters long
-        var isCapitalLetter = capitalLetterRegex.test(password);
-        var isNumber = numberRegex.test(password);
-        var isSpecialCharacter = specialCharacterRegex.test(password);
-        var isLengthValid = password.length >= 10;
-
-        // Display an error message if any requirement is not met
-        if (!isCapitalLetter || !isNumber || !isSpecialCharacter || !isLengthValid) {
-            alert("Password must meet the specified requirements and be at least 10 characters long");
-            return false;
-        }
-
-        return true;
+    // Add random lines
+    for (var i = 0; i < 6; i++) {
+        ctx.strokeStyle = '#FFF';
+        ctx.beginPath();
+        ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
+        ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
+        ctx.stroke();
     }
 
-    // Update the requirements dynamically as the user types
-    document.getElementById('password').addEventListener('input', function () {
-        var password = this.value;
+    // Add random dots
+    for (var i = 0; i < 30; i++) {
+        ctx.fillStyle = '#FFF';
+        ctx.beginPath();
+        ctx.arc(Math.random() * canvas.width, Math.random() * canvas.height, 1, 0, Math.PI * 2);
+        ctx.fill();
+    }
 
-        document.getElementById('capital-letter').className = /[A-Z]/.test(password) ? 'requirement-met' : '';
-        document.getElementById('number').className = /\d/.test(password) ? 'requirement-met' : '';
-        document.getElementById('special-character').className = /[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/.test(password) ? 'requirement-met' : '';
-        document.getElementById('length').className = password.length >= 10 ? 'requirement-met' : '';
-    });
-</script>
+    // Store the CAPTCHA text for validation
+    canvas.setAttribute('data-captcha', captcha);
+}
 
-</body>
-</html>
+// Initialize CAPTCHA on page load
+document.addEventListener('DOMContentLoaded', generateCaptcha);
+ </script>
+    </body>
+
+ </html>
